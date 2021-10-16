@@ -72,7 +72,7 @@ cmd() {
 	elif (( USE_NO )); then
 		if [ "$vstat" -eq 1 ]
         then
-        cat > ~/.drirc << EOF
+        cat >> ~/.drirc << EOF        
 <device screen="0" driver="dri2">
 <application name="Default">
 <option name="vblank_mode" value="0"/>
