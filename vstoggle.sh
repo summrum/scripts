@@ -1,9 +1,9 @@
 #!/bin/bash
 # Script to enable and disable V-Sync on intel GPU for current user
-# v:1.2 2021-10-15
+# v:1.3 2021-10-16
 
 scriptname='vstoggle'
-scriptver='1.2'
+scriptver='1.3'
 
 usage() {
 	cat <<EOF
@@ -43,9 +43,12 @@ exit 0
 fi
 }
 
-if test -f ~/.drirc
-    then
+if test -f ~/.drirc; then
+    if [ ! -z "$(grep "option name=\"vblank_mode\" value=\"0\"" ~/.drirc)" ]; then
     vstat=0
+    else
+    vstat=1
+    fi
     else
     vstat=1
 fi
@@ -54,8 +57,7 @@ cmd() {
     if (( USE_STATUS )); then
         status
 	elif (( USE_YES )); then
-		if [ "$vstat" -eq 1 ]
-        then
+		if [ "$vstat" -eq 1 ]; then
         echo -e "${YELLOW}V-Sync is already on"
         exit 1
         else
