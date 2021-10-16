@@ -77,7 +77,7 @@ cmd() {
 		if [ "$vstat" -eq 1 ]; then
         echo -e "${YELLOW}V-Sync is already on"
         exit 1
-        else # FIXME
+        else
         sed -i s/"$dsn"/"$dsy"/g ~/.drirc
         sed -i s/"$vbn"/"$vby"/g ~/.drirc
         echo -e "${GREEN}V-Sync now switched on.\n${NC}Restart to apply changes."
@@ -85,7 +85,7 @@ cmd() {
         fi
 	elif (( USE_NO )); then
 		if [ "$vstat" -eq 1 ]
-        then # FIXME
+        then
         sed -i s/"$dsy"/"$dsn"/g ~/.drirc
         sed -i s/"$vby"/"$vbn"/g ~/.drirc
         echo -e "${RED}V-Sync now switched off.\n${NC}Restart to apply changes."
