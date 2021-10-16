@@ -1,9 +1,9 @@
 #!/bin/bash
 # Script to enable and disable V-Sync on intel GPU for current user
-# v:1.3 2021-10-16
+# v:1.4 2021-10-16
 
 scriptname='vstoggle'
-scriptver='1.3'
+scriptver='1.4'
 
 usage() {
 	cat <<EOF
@@ -61,23 +61,27 @@ cmd() {
         echo -e "${YELLOW}V-Sync is already on"
         exit 1
         else # FIXME THIS SHOULD IDEALLY BE CHANGED TO MATCH THE ENTIRE MULTI-LINE PATTERN
+        sed -i /"<driconf>"/d ~/.drirc
         sed -i /"<device screen=\"0\" driver=\"dri2\">"/d ~/.drirc
         sed -i /"<application name=\"Default\">"/d ~/.drirc
         sed -i /"<option name=\"vblank_mode\" value=\"0\"\/>"/d ~/.drirc
         sed -i /"<\/application>"/d ~/.drirc
         sed -i /"<\/device>"/d ~/.drirc
+        sed -i /"<\/driconf>"/d ~/.drirc
         echo -e "${GREEN}V-Sync now switched on.\n${NC}Restart to apply changes."
         exit 0
         fi
 	elif (( USE_NO )); then
 		if [ "$vstat" -eq 1 ]
         then
-        cat >> ~/.drirc << EOF        
+        cat >> ~/.drirc << EOF
+<driconf>
 <device screen="0" driver="dri2">
 <application name="Default">
 <option name="vblank_mode" value="0"/>
 </application>
 </device>
+</driconf>
 EOF
         echo -e "${RED}V-Sync now switched off.\n${NC}Restart to apply changes."
         exit 0
