@@ -61,7 +61,11 @@ cmd() {
         echo -e "${YELLOW}V-Sync is already on"
         exit 1
         else
-        rm ~/.drirc
+        sed -i /"<device screen=\"0\" driver=\"dri2\">"/d ~/.drirc
+        sed -i /"<application name=\"Default\">"/d ~/.drirc
+        sed -i /"<option name=\"vblank_mode\" value=\"0\"\/>"/d ~/.drirc
+        sed -i /"<\/application>"/d ~/.drirc
+        sed -i /"<\/device>"/d ~/.drirc
         echo -e "${GREEN}V-Sync now switched on.\n${NC}Restart to apply changes."
         exit 0
         fi
@@ -70,9 +74,9 @@ cmd() {
         then
         cat > ~/.drirc << EOF
 <device screen="0" driver="dri2">
-    <application name="Default">
-        <option name="vblank_mode" value="0"/>
-    </application>
+<application name="Default">
+<option name="vblank_mode" value="0"/>
+</application>
 </device>
 EOF
         echo -e "${RED}V-Sync now switched off.\n${NC}Restart to apply changes."
