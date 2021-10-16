@@ -58,7 +58,7 @@ done
 shift "$(( OPTIND - 1 ))"
 
 # Find configuration files matching patterns given; change to add/remove naming patterns
-confdiff=$(sudo find $path \( -name \*.new-\* -o -name \*.new -o -name \*.NEW -o -name \*.old-\* -o -name \*.old -o -name \*.OLD -o -name \*.bak -o -name \*.pacnew -name \*.pacsave \))
+confdiff=$(sudo find $path \( -name \*.new-\* -o -name \*.new -o -name \*.NEW -o -name \*.old-\* -o -name \*.old -o -name \*.OLD -o -name \*.bak -o -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave -o -name '*.pacsave.[0-9]*' \))
 
 if [[ -z "$confdiff" ]]; then
     echo "No new configurations found in searched directories"
