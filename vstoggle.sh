@@ -60,7 +60,7 @@ cmd() {
 		if [ "$vstat" -eq 1 ]; then
         echo -e "${YELLOW}V-Sync is already on"
         exit 1
-        else
+        else # FIXME THIS SHOULD IDEALLY BE CHANGED TO MATCH THE ENTIRE MULTI-LINE PATTERN
         sed -i /"<device screen=\"0\" driver=\"dri2\">"/d ~/.drirc
         sed -i /"<application name=\"Default\">"/d ~/.drirc
         sed -i /"<option name=\"vblank_mode\" value=\"0\"\/>"/d ~/.drirc
