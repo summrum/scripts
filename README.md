@@ -10,7 +10,9 @@ General Options:
   -h/--help&emsp;Display usage information  
   -v/--version&emsp;Display version
   
-- **confchange**: A Bash script to look for new configuration files.  
+- **confchange**: A Bash script to look for new configuration files. Files matching the following patterns are searched for:  
+\*.new-\* \*.new \*.NEW \*.old-\* \*.old \*.OLD \*.bak \*.pacnew \*.pacorig \*.pacsave \*.pacsave.[0-9]*  
+Files are opened in editor for comparison with original/new version(s) using sudoedit.  
 Usage: confchange [ -e "EDITOR" ] [ -p "PATH" ] [ -h | -v ]  
 Variables:  
   -e/--editor&emsp;Change editor from default (set as Meld https://github.com/GNOME/meld). Change $editor in script for default change.  
