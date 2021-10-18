@@ -6,7 +6,7 @@ A collection of simple scripts I have created to carry out various tasks. Create
 Files are opened in editor for comparison with original/new version(s) using sudoedit.   
 Usage: confchange [ -e \<editor\> ] [ -p \<path\> ] [ -h | -v ]  
 Variables:  
-  -e/--editor&emsp;Change editor from default (set as Meld https://github.com/GNOME/meld as that works for me). Change $editor in script for default change.  
+  -e/--editor&emsp;Change editor from default (set as Meld https://github.com/GNOME/meld as that works for me). Change $editor in script for default change. Incorrect program name will default to $EDITOR.  
   -p/--path&emsp;Change path(s) from default (/boot /etc /usr /var). Change $path in script for default change. /var/log is ignored.  
 General Options:  
   -h/--help&emsp;Display usage information  
