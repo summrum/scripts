@@ -32,7 +32,7 @@ picrename [ -f <filepattern> ] [ -p <path> ]  [ -P <preset> ] [ -V <video> ] [ -
   -h/--help&emsp;Display usage information  
   -v/--version&emsp;Display version  
 
-## vstoggle:  
+## 3. vstoggle:  
 A Bash script to enable and disable V-Sync on intel GPU for current user; works by creating ~/.drirc file (if not already present) and setting vblank_mode=0 (see https://wiki.archlinux.org/title/Intel_graphics#Disable_Vertical_Synchronization_(VSYNC)). Turning vsync on sets vblank_mode=3. Not tested with multi-monitor setups and will exit if simple check for second screen in .drirc found. Also not really designed for those with a complex .drirc file - backup your ~/.drirc before usage. Improvements to come after further testing...    
 ### Usage: 
 ```
