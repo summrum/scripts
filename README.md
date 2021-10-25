@@ -44,3 +44,13 @@ vstoggle [ -s | -y | -n | -h | -v ]
   -n/--no&emsp;Disable V-Sync  
   -h/--help&emsp;Display usage information  
   -v/--version&emsp;Display version
+  
+  ## 4. birthday:  
+A Bash script to look at the age of the root installation.    
+### Usage: 
+```
+birthday [ -h | -v ]  
+```
+### General Options:   
+  -h/--help&emsp;Display usage information  
+  -v/--version&emsp;Display version
