@@ -46,7 +46,7 @@ vstoggle [ -s | -y | -n | -h | -v ]
   -v/--version&emsp;Display version
   
   ## 4. birthday:  
-A Bash script to look at the age of the root installation.    
+A Bash script to look at the age of the root installation. Date style set by -s (or --style) option will be remembered for subsequent runs so doesn't need re-setting (only for changing).    
 ### Usage: 
 ```
 birthday [ -s | -h | -v ]  
