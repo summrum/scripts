@@ -1,5 +1,5 @@
 # Scripts
-A collection of simple scripts I have created to carry out various tasks. Created for, and tested using, Arch and Void GNU/Linux distributions. Currently contain Bashisms but I am working towards compatibility with Dash. I would imagine it highly likely that these scripts contain bugs.  
+A collection of simple scripts I have created to carry out various tasks and to help me learn shell scripting. Created for, and tested using, Arch and Void GNU/Linux distributions. Currently contain Bashisms but I am working towards compatibility with Dash. I would imagine it highly likely that these scripts contain bugs.  
   
 ## 1. confchange:  
 A Bash script to look for new and backup configuration files. Files matching the following patterns are searched for:  
