@@ -10,6 +10,7 @@ usage() {
 $scriptname v:$scriptver
 
 A simple script to look at the age of the root installation.
+Date style currently set as $STYLE ($STYLE_F).
 
 Usage: $scriptname [ -s | -h | -v ]
 
@@ -25,7 +26,7 @@ version() {
 	printf "%s %s\n" "$scriptname" "$scriptver"
 }
 
-BIRTH=$(stat / | awk '/Birth: /{print $2}')
+BIRTH=$(LANG=C stat / | awk '/Birth: /{print $2}')
 DATE=$(date "+%Y-%m-%d")
 
 IFS=- read BIRTH_1 BIRTH_2 BIRTH_3 <<< "$BIRTH"
@@ -63,6 +64,22 @@ STYLE=DMY
 EOF
     [ -r $HOME/.rumprefs ] && . $HOME/.rumprefs
 fi
+if [ $STYLE = "DMY" ]; then
+STYLE_F="day/month/year"
+elif [ $STYLE = "MDY" ]; then
+STYLE_F="month/day/year"
+elif [ $STYLE = "YDM" ]; then
+STYLE_F="year/day/month"
+elif [ $STYLE = "DYM" ]; then
+STYLE_F="day/year/month"
+elif [ $STYLE = "YMD" ]; then
+STYLE_F="year/month/day"
+elif [ $STYLE = "MYD" ]; then
+STYLE_F="month/year/day"
+else
+STYLE_F="defaulting to day/month/year"
+STYLE="unrecognised format"
+fi
 }
 
 cmd () {
@@ -93,7 +110,7 @@ if [ -z "$1" ]; then
                 sed -i s/"STYLE=.*"/"STYLE=$2"/g $HOME/.rumprefs
                 prefs; cmd; exit 0;;
     		-h|--help)
-    			usage; exit 0;;
+    			prefs; usage; exit 0;;
     		-v|--version)
     			version
     			exit 0 ;;
