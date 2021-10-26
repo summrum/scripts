@@ -11,7 +11,7 @@ $scriptname v:$scriptver
 
 A simple script to look at the age of the root installation.
 
-Usage: $scriptname [ -h | -v ]
+Usage: $scriptname [ -s | -h | -v ]
 
 General Options:
   -s/--style        set date style for report (e.g. DMY, YMD, MDY, YDM)
