@@ -12,10 +12,12 @@ $scriptname v:$scriptver
 A simple script to look at the age of the root installation.
 Date style currently set as $STYLE ($STYLE_F).
 
-Usage: $scriptname [ -s | -h | -v ]
+Usage: $scriptname [ -s <style> | -h | -v ]
+
+Variables:
+  -s/--style        set date style for report (e.g. DMY, YMD, MDY, YDM)
 
 General Options:
-  -s/--style        set date style for report (e.g. DMY, YMD, MDY, YDM)
   -h/--help         this usage information
   -v/--version      display version
 
