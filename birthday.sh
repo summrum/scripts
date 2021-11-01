@@ -48,7 +48,7 @@ DATE_D=$((10#"$DATE_3"))
 
 getage () { #FIXME
     if ((AGE_Y >= 1)); then
-        if ((DATE_M = BIRTH_M)) && ((DATE_D = BIRTH_D)); then
+        if ((DATE_M == BIRTH_M)) && ((DATE_D == BIRTH_D)); then
         echo "exactly $AGE_Y years old today - Happy Birthday!"
         else
         echo "$AGE_Y years old."
