@@ -1,9 +1,9 @@
 #!/bin/bash
 # Script to look at the age of the root installation
-# v:1.1 2021-10-26
+# v:1.3 2021-11-01
 
 scriptname='birthday'
-scriptver='1.1'
+scriptver='1.3'
 
 usage() {
 	cat <<EOF
@@ -27,7 +27,15 @@ version() {
 }
 
 BIRTH=$(LANG=C stat / | awk '/Birth: /{print $2}')
-DATE=$(date "+%Y-%m-%d")
+case "$BIRTH" in
+    *2* ) DATE=$(date "+%Y-%m-%d"); BIRTH_S=$(date -d "$BIRTH" "+%s"); DATE_S=$(date "+%s") ;;
+    * ) echo "Birth not recorded for root partition"; exit 1 ;;
+esac
+
+AGE_S=$((DATE_S-BIRTH_S))
+AGE_D=$((AGE_S / 86400))
+AGE_M=$((AGE_S / 2629800))
+AGE_Y=$((AGE_S / 31557600))
 
 IFS=- read BIRTH_1 BIRTH_2 BIRTH_3 <<< "$BIRTH"
 BIRTH_Y=$((10#"$BIRTH_1"))
@@ -35,35 +43,37 @@ BIRTH_M=$((10#"$BIRTH_2"))
 BIRTH_D=$((10#"$BIRTH_3"))
 
 IFS=- read DATE_1 DATE_2 DATE_3 <<< "$DATE"
-DATE_Y=$((10#"$DATE_1"))
 DATE_M=$((10#"$DATE_2"))
 DATE_D=$((10#"$DATE_3"))
 
-AGE_Y=$((DATE_Y-BIRTH_Y))
-AGE_M=$((DATE_M-BIRTH_M))
-AGE_D=$((DATE_D-BIRTH_D))
-
-getage () {
-    if (($AGE_Y > 0)); then
-    echo "$AGE_Y years, $AGE_M months and $AGE_D days old"
-    elif (($AGE_M > 0)); then
-    echo "$AGE_M months and $AGE_D days old"
+getage () { #FIXME
+    if ((AGE_Y >= 1)); then
+        if ((DATE_M = BIRTH_M)) && ((DATE_D = BIRTH_D)); then
+        echo "exactly $AGE_Y years old today - Happy Birthday!"
+        else
+        echo "$AGE_Y years old."
+        fi
+    elif ((AGE_M >= 1)); then
+    echo "$AGE_M months old."
     else
-    echo "$AGE_D days old"
+    echo "$AGE_D days old."
     fi
 }
 
-REPORT=$(getage)
-
-prefs() {
-if test -f $HOME/.rumprefs; then
-    [ -r $HOME/.rumprefs ] && . $HOME/.rumprefs
+confmake() {
+if test -f $HOME/.rumprefs/birthday; then
+    [ -r $HOME/.rumprefs/birthday ] && . $HOME/.rumprefs/birthday
 else
-    cat >> $HOME/.rumprefs << EOF
+    mkdir -p $HOME/.rumprefs
+    cat >> $HOME/.rumprefs/birthday << EOF
 STYLE=DMY
 EOF
-    [ -r $HOME/.rumprefs ] && . $HOME/.rumprefs
+    [ -r $HOME/.rumprefs/birthday ] && . $HOME/.rumprefs/birthday
 fi
+}
+
+prefs() {
+confmake
 if [ $STYLE = "DMY" ]; then
 STYLE_F="day/month/year"
 elif [ $STYLE = "MDY" ]; then
@@ -82,6 +92,16 @@ STYLE="unrecognised format"
 fi
 }
 
+if
+lsb_release -i > /dev/null; then
+OSNAME=$(lsb_release -i | sed 's/Linux//g; s/linux//g; s/Distributor//g; s/ID://g' | sed 's/.*/\u&/' | xargs)
+elif
+cat /etc/*-release > /dev/null; then
+OSNAME=$(cat /etc/*-release | grep DISTRIB_ID | sed 's/Linux//g; s/linux//g; s/"//g; s/DISTRIB_ID//g; s/=//g' | sed 's/.*/\u&/')
+else
+OSNAME="Unknown"
+fi
+
 cmd () {
 if [ $STYLE = "DMY" ]; then
 INST="$BIRTH_3/$BIRTH_2/$BIRTH_1"
@@ -98,7 +118,7 @@ INST="$BIRTH_2/$BIRTH_1/$BIRTH_3"
 else
 INST="$BIRTH_3/$BIRTH_2/$BIRTH_1"
 fi
-echo "Root installation created on $INST; the operating system is $REPORT."
+echo "$OSNAME installation created on $INST; the operating system is $(getage)"
 }
 
 if [ -z "$1" ]; then
@@ -107,7 +127,8 @@ if [ -z "$1" ]; then
     while [[ -n "$1" ]]; do
     	case "$1" in
     		-s|--style)
-                sed -i s/"STYLE=.*"/"STYLE=$2"/g $HOME/.rumprefs
+                confmake
+                sed -i s/"STYLE=.*"/"STYLE=$2"/g $HOME/.rumprefs/birthday
                 prefs; cmd; exit 0;;
     		-h|--help)
     			prefs; usage; exit 0;;
