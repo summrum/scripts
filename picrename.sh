@@ -1,26 +1,27 @@
 #!/bin/bash
 # Script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset
-# v.4.5 2021-10-18
+# v.4.6 2021-11-02
 
 scriptname='picrename'
-scriptver='4.5'
+scriptver='4.6'
 
 usage() {
 	cat <<EOF
 $scriptname v:$scriptver
 
-A simple script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset. Video recoding required handbrake-cli (https://handbrake.fr/).
+A simple script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset. Video recoding requires handbrake-cli (https://handbrake.fr/).
 
-Usage: $scriptname [ -f <filepattern> ] [ -p <path> ]  [ -P <preset> ] [ -V <video> ] [ -C <container> ]  [ -h | -v ]
+Usage: $scriptname [ -f <filepattern> ] [ -p <path> ]  [ -P <preset> ] [ -V <video> ] [ -C <container> ]  [ -d | -h | -v ]
 
 Variables:
-  -f/--file         change editor from default
-  -p/--path         change path(s) from default ($HOME/Pictures)
-  -P/--preset       change handbrake-cli recoding preset from default (H.264 MKV 1080p30)
-  -V/--video        change video file types searched for from default (*.mov)
-  -C/--container    change container for recoded video files from default (mkv)
+  -f/--file         temporarily change file pattern from default ("$filepattern")
+  -p/--path         temporarily change path(s) from default ("$path")
+  -P/--preset       temporarily change handbrake-cli recoding preset from default ("$preset")
+  -V/--video        temporarily change video file types searched for from default ("$video")
+  -C/--container    temporarily change container for recoded video files from default ("$container")
 
 General Options:
+  -d/--defaults     permanently change defaults (preferences file edited with $EDITOR)
   -h/--help         this usage information
   -v/--version      display version
 
@@ -31,25 +32,40 @@ version() {
 	printf "%s %s\n" "$scriptname" "$scriptver"
 }
 
-# Select path to file(s) here
-path="$HOME/Pictures"
-# Select default file name pattern to search for here
-filepattern="DSCN|IMG|WA"
-# Select video format(s) for recoding here
-video="*.mov"
-# Select video output format here
-preset="H.264 MKV 1080p30"
-# Select video output container here
-container="mkv"
-
 error_exit() {
     echo "$1" 1>&2
     exit 1
 }
 
+if test -f $HOME/.rumprefs/picrename; then
+    [ -r $HOME/.rumprefs/picrename ] && . $HOME/.rumprefs/picrename
+else
+    mkdir -p $HOME/.rumprefs
+    cat >> $HOME/.rumprefs/picrename << EOF
+# picrename default variables; ensure double quotes ("") are used around options
+
+# Select path to file(s) here
+path="$HOME/Pictures"
+
+# Select default file name pattern to search for here
+filepattern="DSCN|IMG|WA"
+
+# Select video format(s) for recoding here
+video="*.mov"
+
+# Select video output format here
+preset="H.264 MKV 1080p30"
+
+# Select video output container here
+container="mkv"
+EOF
+    [ -r $HOME/.rumprefs/picrename ] && . $HOME/.rumprefs/picrename
+fi
+
 for arg in "$@"; do
 shift
     case "$arg" in
+        "--defaults")   set -- "$@" "-d" ;;
         "--file")       set -- "$@" "-f" ;;
         "--path")       set -- "$@" "-p" ;;
         "--container")  set -- "$@" "-C" ;;
@@ -62,8 +78,11 @@ shift
     esac
 done
 
-while getopts ":f:p:C:P:V:hv" opt; do
+while getopts ":f:p:C:P:V:dhv" opt; do
     case $opt in
+        d) $EDITOR $HOME/.rumprefs/picrename &
+        wait
+        [ -r $HOME/.rumprefs/picrename ] && . $HOME/.rumprefs/picrename ;;
         f) filepattern=$OPTARG ;;
         p) path=$OPTARG ;;
         C) container=$OPTARG ;;
