@@ -22,11 +22,12 @@ A Bash script to rename files in given path matching given pattern to date+time 
 picrename [ -f <filepattern> ] [ -p <path> ]  [ -P <preset> ] [ -V <video> ] [ -C <container> ]  [ -h | -v ]  
 ```
 ### Options:  
- - `-f/--file <filepattern>` Change file pattern from default (`DSCN|IMG|WA`) to `<filepattern>`  
- - `-p/--path <path>` Change path(s) from default (`$HOME/Pictures`) to `<path>`  
- - `-P/--preset <preset>` Change handbrake-cli recoding preset from default (`H.264 MKV 1080p30`) to `<preset>`  
- - `-V/--video <video>` Change video file types searched for from default (`*.mov`) to `<video>`  
- - `-C/--container <container>` Change container for recoded video files from default (`mkv`) to `<container>`   
+ - `-f/--file <filepattern>` Temporarily change file pattern from default (`DSCN|IMG|WA`) to `<filepattern>`  
+ - `-p/--path <path>` Temporarily change path(s) from default (`$HOME/Pictures`) to `<path>`  
+ - `-P/--preset <preset>` Temporarily change handbrake-cli recoding preset from default (`H.264 MKV 1080p30`) to `<preset>`  
+ - `-V/--video <video>` Temporarily change video file types searched for from default (`*.mov`) to `<video>`  
+ - `-C/--container <container>` Temporarily change container for recoded video files from default (`mkv`) to `<container>`   
+ - `-d/--defaults` Permanently change the saved defaults for the current user with the environment variable `$EDITOR`
  - `-h/--help` Display usage information  
  - `-v/--version` Display version  
 
