@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to find new configurations and open to compare with originals
 # v:1.2 2021-10-18
 
