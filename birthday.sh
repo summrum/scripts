@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to look at the age of the root installation
 # v:1.3 2021-11-01
 
