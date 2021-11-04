@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset
 # v.4.6 2021-11-02
 
