@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+#! /bin/sh
 # Script to find new configurations and open to compare with originals
-# v:1.2 2021-10-18
+# v:1.3 2021-11-04
 
 scriptname='confchange'
-scriptver='1.2'
+scriptver='1.3'
 
 usage() {
 	cat <<EOF
@@ -60,27 +60,27 @@ shift "$(( OPTIND - 1 ))"
 # Find configuration files matching patterns given; change to add/remove naming patterns
 confdiff=$(sudo find $path -not \( -path /var/log -prune \) \( -name \*.new-\* -o -name \*.new -o -name \*.NEW -o -name \*.old-\* -o -name \*.old -o -name \*.OLD -o -name \*.bak -o -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave -o -name '*.pacsave.[0-9]*' \))
 
-if [[ -z "$confdiff" ]]; then
-    echo "No new configurations found in searched directories"
-    exit 0
-fi
+case "$confdiff" in
+    "" ) printf "%s %s\n" "No new configurations found in searched directories"; exit 0 ;;
+esac
 
 for f in $confdiff; do
     SUDO_EDITOR="$editor" sudo -e ${f%\.*} $f &
     wait
     if [ "$?" = "0" ]; then
         while true; do
-            read -p "Delete \""$f"\"? (Y/n): " YyNn
+            printf "Delete \""$f"\"? (Y/n): "
+            read -r YyNn
             case $YyNn in
             [Yy]* ) sudo rm "$f" && \
-            echo "Deleted \""$f"\""
+            printf "%s %s\n" "Deleted \""$f"\""
             break ;;
             [Nn]* ) break ;;
-            *     ) echo "Answer (Y)es or (n)o" ;;
+            *     ) printf "%s %s\n" "Answer (Y)es or (n)o" ;;
             esac
         done
     else
-        echo "Cannot open file(s) in editor!"
+        printf "%s %s\n" "Cannot open file(s) in editor!"
         exit 1
     fi
 done
