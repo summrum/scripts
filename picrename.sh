@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset
-# v.4.6 2021-11-02
+# v.4.7 2021-11-04
 
 scriptname='picrename'
-scriptver='4.6'
+scriptver='4.7'
 
 usage() {
 	cat <<EOF
@@ -138,18 +138,23 @@ fi
 
 for m in $movs; do
     mn=$(basename "$m" "${m##*.}")
-    HandBrakeCLI -i "$m" -o "$fp"/"$mn""$container" --preset="$preset" | tee -a "$path"/rename_log_"$logdate"
-    vidcheck=$(find "$path" -name "$mn""$container")    
+    if command -v HandBrakeCLI >/dev/null 2>&1 ; then
+        HandBrakeCLI -i "$m" -o "$fp"/"$mn""$container" --preset="$preset" | tee -a "$path"/rename_log_"$logdate"
+        vidcheck=$(find "$path" -name "$mn""$container")
+        else
+        echo "Cannot recode found "$video" file(s), HandBrakeCLI not found!" >> "$path"/rename_log_"$logdate"
+        error_exit "Cannot recode found "$video" file(s), HandBrakeCLI not found!"
+    fi
     if [[ -n "$vidcheck" ]]; then
         rm "$m"
         echo >> "$path"/rename_log_"$logdate"
         echo "Recoded "$m" to "$fp"/"$mn""$container"" >> "$path"/rename_log_"$logdate"
         elif [ "$?" = "0" ]; then
         echo "Recode loop started, no error reported by HandBrakeCLI, but no recoded file(s) found!" >> "$path"/rename_log_"$logdate"
-        error_exit "Recode loop started, no error reported by HandBrakeCLI, but no recoded file(s) found!"          
+        error_exit "Recode loop started, no error reported by HandBrakeCLI, but no recoded file(s) found!"
         else
         echo "Cannot recode found "$video" file(s)!" >> "$path"/rename_log_"$logdate"
-        error_exit "Cannot recode found "$video" file(s)!"       
+        error_exit "Cannot recode found "$video" file(s)!"
     fi
 done
 echo
