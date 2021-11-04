@@ -1,5 +1,5 @@
 # Scripts
-A collection of simple shell scripts I have created to carry out various tasks and to help me learn shell scripting. Created for, and tested using, Arch and Void GNU/Linux distributions using Bash 5.1.8. I would imagine it highly likely that these scripts contain bugs.  
+A collection of simple shell scripts I have created to carry out various tasks and to help me learn shell scripting. Created for, and tested using, Arch, Majaro and Void GNU/Linux distributions. I would imagine it highly likely that these scripts contain bugs.  
   
 ## 1. confchange:  
 A shell script to look for new and backup configuration files; should hopefully be POSIX-compliant. Files matching the following patterns are searched for:  
