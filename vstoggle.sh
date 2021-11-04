@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Script to enable and disable V-Sync on intel GPU for current user
 # v:1.5 2021-10-16
 
