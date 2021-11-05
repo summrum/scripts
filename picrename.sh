@@ -50,7 +50,7 @@ else
 # picrename default variables; ensure double quotes ("") are used around options
 
 # Select path to file(s) here
-path="$HOME/Pictures/Emily_Pictures"
+path="$HOME/Pictures"
 
 # Select default file name pattern to search for here
 filepattern="DSCN|IMG|WA"
