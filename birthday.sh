@@ -8,7 +8,7 @@ if (( BASH_VERSINFO[0] < 4 )); then
 fi
 
 scriptname='birthday'
-scriptver='1.3'
+scriptver='1.4'
 
 usage() {
 	cat <<EOF
