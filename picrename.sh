@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset
-# v.4.8 2021-11-04
+# v.4.8 2021-11-05
 
 if (( BASH_VERSINFO[0] < 4 )); then
     printf "%s %s\n" "Bash 4 or higher currently required."
