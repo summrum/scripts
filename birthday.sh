@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Script to look at the age of the root installation
-# v:1.3 2021-11-01
+# v:1.4 2021-11-05
+
+if (( BASH_VERSINFO[0] < 4 )); then
+    printf "%s %s\n" "Bash 4 or higher currently required."
+    exit 1
+fi
 
 scriptname='birthday'
 scriptver='1.3'
@@ -31,7 +36,7 @@ version() {
 BIRTH=$(LANG=C stat / | awk '/Birth: /{print $2}')
 case "$BIRTH" in
     *2* ) DATE=$(date "+%Y-%m-%d"); BIRTH_S=$(date -d "$BIRTH" "+%s"); DATE_S=$(date "+%s") ;;
-    * ) echo "Birth not recorded for root partition"; exit 1 ;;
+    * ) printf "%s %s\n" "Birth not recorded for root partition"; exit 1 ;;
 esac
 
 AGE_S=$((DATE_S-BIRTH_S))
@@ -51,14 +56,14 @@ DATE_D=$((10#"$DATE_3"))
 getage () { #FIXME
     if ((AGE_Y >= 1)); then
         if ((DATE_M == BIRTH_M)) && ((DATE_D == BIRTH_D)); then
-        echo "exactly $AGE_Y years old today - Happy Birthday!"
+        printf "%s %s\n" "exactly $AGE_Y years old today - Happy Birthday!"
         else
-        echo "$AGE_Y years old."
+        printf "%s %s\n" "$AGE_Y years old."
         fi
     elif ((AGE_M >= 1)); then
-    echo "$AGE_M months old."
+    printf "%s %s\n" "$AGE_M months old."
     else
-    echo "$AGE_D days old."
+    printf "%s %s\n" "$AGE_D days old."
     fi
 }
 
@@ -120,7 +125,7 @@ INST="$BIRTH_2/$BIRTH_1/$BIRTH_3"
 else
 INST="$BIRTH_3/$BIRTH_2/$BIRTH_1"
 fi
-echo "$OSNAME installation created on $INST; the operating system is $(getage)"
+printf "%s %s\n" "$OSNAME installation created on $INST; the operating system is $(getage)"
 }
 
 if [ -z "$1" ]; then
