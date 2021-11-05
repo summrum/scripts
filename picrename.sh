@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # Script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset
-# v.4.7 2021-11-04
+# v.4.8 2021-11-04
+
+if (( BASH_VERSINFO[0] < 4 )); then
+    printf "%s %s\n" "Bash 4 or higher currently required."
+    exit 1
+fi
 
 scriptname='picrename'
-scriptver='4.7'
+scriptver='4.8'
 
 usage() {
 	cat <<EOF
@@ -33,7 +38,7 @@ version() {
 }
 
 error_exit() {
-    echo "$1" 1>&2
+    printf "%s %s\n" "$1" 1>&2
     exit 1
 }
 
@@ -45,7 +50,7 @@ else
 # picrename default variables; ensure double quotes ("") are used around options
 
 # Select path to file(s) here
-path="$HOME/Pictures"
+path="$HOME/Pictures/Emily_Pictures"
 
 # Select default file name pattern to search for here
 filepattern="DSCN|IMG|WA"
@@ -97,43 +102,43 @@ done
 shift "$(( OPTIND - 1 ))"
 
 rename=$(find "$path" -regextype posix-extended -regex ".*("$filepattern").*")
-if [[ -z "$rename" ]]; then 
-    echo "No files to rename"
+if [[ -z "$rename" ]]; then
+    printf "%s %s\n" "No files to rename"
     exit 0
 fi
 
 logdate=$(date +%Y%m%d_%H%M%S)
-echo "Path = "$path"" >> "$path"/rename_log_"$logdate"
-echo "Pattern searched for = "$filepattern"" >> "$path"/rename_log_"$logdate"
-echo "Video file extension(s) recoded ="$video"" >> "$path"/rename_log_"$logdate"
-echo "Video output format = "$preset" in "$container" container" >> "$path"/rename_log_"$logdate"
+printf "%s %s\n" "Path = "$path"" >> "$path"/rename_log_"$logdate"
+printf "%s %s\n" "Pattern searched for = "$filepattern"" >> "$path"/rename_log_"$logdate"
+printf "%s %s\n" "Video file extension(s) recoded ="$video"" >> "$path"/rename_log_"$logdate"
+printf "%s %s\n" "Video output format = "$preset" in "$container" container" >> "$path"/rename_log_"$logdate"
 echo >> "$path"/rename_log_"$logdate"
 
 start=$(date "+%H:%M %a %d %B %Y")
 
 for f in $rename; do
     find "$f" -type f -print0 | xargs -0 chmod 644
-    fp=$(dirname "$f") 
+    fp=$(dirname "$f")
     fe="$(tr '[:upper:]' '[:lower:]' <<<"${f##*.}")"
     fx=$(date -r "$f" +%Y%m%d_%H%M%S)
     if test -f "$fp"/"$fx"."$fe"; then
-    echo "Cannot rename found file "$f" as "$fp"/"$fx"."$fe" already exists!" 
-    echo "Cannot rename found file "$f" as "$fp"/"$fx"."$fe" already exists!" >> "$path"/rename_log_"$logdate"
+    printf "%s %s\n" "Cannot rename found file "$f" as "$fp"/"$fx"."$fe" already exists!"
+    printf "%s %s\n" "Cannot rename found file "$f" as "$fp"/"$fx"."$fe" already exists!" >> "$path"/rename_log_"$logdate"
     else
         mv -n "$f" "$fp"/"$fx"."$fe"
         if [ "$?" = "0" ]; then
-        echo "Renamed "$f" to "$fp"/"$fx"."$fe"" >> "$path"/rename_log_"$logdate"
+        printf "%s %s\n" "Renamed "$f" to "$fp"/"$fx"."$fe"" >> "$path"/rename_log_"$logdate"
         else
-        echo "Cannot rename found "$filepattern" file(s)!" >> "$path"/rename_log_"$logdate"
+        printf "%s %s\n" "Cannot rename found "$filepattern" file(s)!" >> "$path"/rename_log_"$logdate"
         error_exit "Cannot rename found "$filepattern" file(s)!"
         fi
     fi
 done
 
 movs=$(find "$path" -name "$video")
-if [[ -z "$movs" ]]; then 
+if [[ -z "$movs" ]]; then
     echo >> "$path"/rename_log_"$logdate"
-    echo "No files to recode" >> "$path"/rename_log_"$logdate"
+    printf "%s %s\n" "No files to recode" >> "$path"/rename_log_"$logdate"
 fi
 
 for m in $movs; do
@@ -142,18 +147,18 @@ for m in $movs; do
         HandBrakeCLI -i "$m" -o "$fp"/"$mn""$container" --preset="$preset" | tee -a "$path"/rename_log_"$logdate"
         vidcheck=$(find "$path" -name "$mn""$container")
         else
-        echo "Cannot recode found "$video" file(s), HandBrakeCLI not found!" >> "$path"/rename_log_"$logdate"
+        printf "%s %s\n" "Cannot recode found "$video" file(s), HandBrakeCLI not found!" >> "$path"/rename_log_"$logdate"
         error_exit "Cannot recode found "$video" file(s), HandBrakeCLI not found!"
     fi
     if [[ -n "$vidcheck" ]]; then
         rm "$m"
         echo >> "$path"/rename_log_"$logdate"
-        echo "Recoded "$m" to "$fp"/"$mn""$container"" >> "$path"/rename_log_"$logdate"
+        printf "%s %s\n" "Recoded "$m" to "$fp"/"$mn""$container"" >> "$path"/rename_log_"$logdate"
         elif [ "$?" = "0" ]; then
-        echo "Recode loop started, no error reported by HandBrakeCLI, but no recoded file(s) found!" >> "$path"/rename_log_"$logdate"
+        printf "%s %s\n" "Recode loop started, no error reported by HandBrakeCLI, but no recoded file(s) found!" >> "$path"/rename_log_"$logdate"
         error_exit "Recode loop started, no error reported by HandBrakeCLI, but no recoded file(s) found!"
         else
-        echo "Cannot recode found "$video" file(s)!" >> "$path"/rename_log_"$logdate"
+        printf "%s %s\n" "Cannot recode found "$video" file(s)!" >> "$path"/rename_log_"$logdate"
         error_exit "Cannot recode found "$video" file(s)!"
     fi
 done
@@ -165,21 +170,21 @@ if test -f "$path"/rename_log_"$logdate"; then
     cat "$path"/rename_log_"$logdate" | grep 'Renamed\|Recoded\|No files to recode'
     echo
     echo >> "$path"/rename_log_"$logdate"
-    echo "Started at $start, finished at $end" >> "$path"/rename_log_"$logdate"
+    printf "%s %s\n" "Started at $start, finished at $end" >> "$path"/rename_log_"$logdate"
     while true; do
         read -p "Delete log file? (Y/n): " Yn
         case $Yn in
         # Delete log file if answered y
         [Yy]* ) rm "$path"/rename_log_"$logdate" && \
-        echo "Deleted log file"
+        printf "%s %s\n" "Deleted log file"
                 break                         ;;
         [Nn]* ) break                         ;;
-        *     ) echo "Answer (Y)es or (n)o." ;;
+        *     ) printf "%s %s\n" "Answer (Y)es or (n)o." ;;
         esac
     done
 fi
 echo
 
-echo "Started at $start, finished at $end"
+printf "%s %s\n" "Started at $start, finished at $end"
 
 exit 0
