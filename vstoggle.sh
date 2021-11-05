@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # Script to enable and disable V-Sync on intel GPU for current user
-# v:1.5 2021-10-16
+# v:1.6 2021-11-05
+
+if (( BASH_VERSINFO[0] < 4 )); then
+    printf "%s %s\n" "Bash 4 or higher currently required."
+    exit 1
+fi
 
 scriptname='vstoggle'
-scriptver='1.5'
+scriptver='1.6'
 
 usage() {
 	cat <<EOF
