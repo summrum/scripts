@@ -15,8 +15,8 @@ Configuration of default editor used for file comparison and/or path(s) to searc
 Usage: $scriptname [ -e <editor> ] [ -p <path> ] [ -h | -v ]
 
 Variables:
-  -e/--editor       change editor from default
-  -p/--path         change path(s) from default (/boot /etc /usr /var)
+  -e/--editor       temporarily change editor from default
+  -p/--path         temporarily change path(s) from default (/boot /etc /usr /var excluding /var/log)
 
 General Options:
   -d/--defaults     permanently change defaults (/etc/confchange.conf file edited with $EDITOR)
