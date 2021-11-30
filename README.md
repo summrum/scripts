@@ -7,7 +7,7 @@ A shell script to look for new and backup configuration files; should hopefully 
 Files are opened in editor for comparison with original/new version(s) using sudoedit. Please be aware that this script requires sudo to run; whilst it works for me, and I have had no issues with it, I highly recommend you read the code fully before using a script from a random person on the internet and giving it root privileges. Default editor used for file comparison and the path(s) searched for configuration files are set in `/etc/confchange.conf` .  
 ### Usage: 
 ```
-confchange [ -e <editor> ] [ -p <path> ] [ -h | -v ]  
+confchange [ -e <editor> ] [ -p <path> ] [ -d | -h | -v ]  
 ```
 ### Options: 
  - `-e/--editor <editor>` Temporarily change editor from default (set as Meld https://github.com/GNOME/meld as that works for me) to `<editor>`. Incorrect program name selection will default to environment variable `$EDITOR`  
