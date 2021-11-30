@@ -10,11 +10,11 @@ Files are opened in editor for comparison with original/new version(s) using sud
 confchange [ -e <editor> ] [ -p <path> ] [ -h | -v ]  
 ```
 ### Options: 
- - `-e/--editor <editor>` Change editor from default (set as Meld https://github.com/GNOME/meld as that works for me) to `<editor>`. Change `$editor` in script to change the default permanently. Incorrect program name selection will default to environment variable `$EDITOR`  
- - `-p/--path <path>` Change path(s) from default (`/boot /etc /usr /var`) to `<path>`. Change `$path` in script to change the default permanently. `/var/log` is ignored   
-  - `-d/--defaults` Permanently change defaults (/etc/confchange.conf file edited with environment variable `$EDITOR`)
-  - `-h/--help` Display usage information  
-  - `-v/--version` Display version
+ - `-e/--editor <editor>` Temporarily change editor from default (set as Meld https://github.com/GNOME/meld as that works for me) to `<editor>`. Incorrect program name selection will default to environment variable `$EDITOR`  
+ - `-p/--path <path>` Temporarily change path(s) from default (`/boot /etc /usr /var`) to `<path>`. `/var/log` is excluded   
+ - `-d/--defaults` Permanently change defaults (/etc/confchange.conf file edited with environment variable `$EDITOR`)
+ - `-h/--help` Display usage information  
+ - `-v/--version` Display version
   
 ## 2. picrename:  
 A Bash script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset. Video recoding requires handbrake-cli (https://handbrake.fr/). Designed to unify names of pictures and videos taken across various devices.  
