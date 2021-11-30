@@ -2,9 +2,9 @@
 A collection of simple shell scripts I have created to carry out various tasks and to help me learn shell scripting. Created for, and tested using, Arch, Manjaro and Void GNU/Linux distributions. I would imagine it highly likely that these scripts contain bugs.  
   
 ## 1. confchange:  
-A shell script to look for new and backup configuration files; should hopefully be POSIX-compliant. Files matching the following patterns are searched for:  
-`*.new-*` `*.new` `*.NEW` `*.old-*` `*.old` `*.OLD` `*.bak` `*.pacnew` `*.pacorig` `*.pacsave` `*.pacsave.[0-9]*`  
-Files are opened in editor for comparison with original/new version(s) using sudoedit. Please be aware that this script requires sudo to run; whilst it works for me, and I have had no issues with it, I highly recommend you read the code fully before using a script from a random person on the internet and giving it sudo rights.  
+A shell script to look for new and backup configuration files; should hopefully work with any POSIX-compliant shell. Files matching the following patterns are searched for:  
+`*.new-*` `*.new` `*.NEW` `*.old-*` `*.old` `*.OLD` `*.bak` `*-` `*.pacnew` `*.pacorig` `*.pacsave` `*.pacsave.[0-9]*`  
+Files are opened in editor for comparison with original/new version(s) using sudoedit. Please be aware that this script requires sudo to run; whilst it works for me, and I have had no issues with it, I highly recommend you read the code fully before using a script from a random person on the internet and giving it root privileges. Default editor used for file comparison and the path(s) searched for configuration files are set in `/etc/confchange.conf` .  
 ### Usage: 
 ```
 confchange [ -e <editor> ] [ -p <path> ] [ -h | -v ]  
@@ -12,6 +12,7 @@ confchange [ -e <editor> ] [ -p <path> ] [ -h | -v ]
 ### Options: 
  - `-e/--editor <editor>` Change editor from default (set as Meld https://github.com/GNOME/meld as that works for me) to `<editor>`. Change `$editor` in script to change the default permanently. Incorrect program name selection will default to environment variable `$EDITOR`  
  - `-p/--path <path>` Change path(s) from default (`/boot /etc /usr /var`) to `<path>`. Change `$path` in script to change the default permanently. `/var/log` is ignored   
+  - `-d/--defaults` Permanently change defaults (/etc/confchange.conf file edited with environment variable `$EDITOR`)
   - `-h/--help` Display usage information  
   - `-v/--version` Display version
   
