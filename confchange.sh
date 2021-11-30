@@ -12,7 +12,7 @@ $scriptname v:$scriptver
 A simple script to look for new configuration files in Void and Arch GNU/Linux distributions.
 Configuration of default editor used for file comparison and/or path(s) to search can be set in /etc/confchange.conf.
 
-Usage: $scriptname [ -e <editor> ] [ -p <path> ] [ -h | -v ]
+Usage: $scriptname [ -e <editor> ] [ -p <path> ] [ -d | -h | -v ]
 
 Variables:
   -e/--editor       temporarily change editor from default
