@@ -1,10 +1,10 @@
 # Scripts
-A collection of simple shell scripts I have created to carry out various tasks and to help me learn shell scripting. Created for, and tested using, Arch, Manjaro and Void GNU/Linux distributions. I would imagine it highly likely that these scripts contain bugs.  
+A collection of simple shell scripts I have created to carry out various tasks and to help me learn shell scripting. Created for, and tested using, Arch, Manjaro and Void GNU/Linux distributions. I would imagine it highly likely that these scripts contain bugs and/or poor practice so any feedback or requests are very welcome.  
   
 ## 1. confchange:  
 A shell script to look for new and backup configuration files; should hopefully work with any POSIX-compliant shell. Files matching the following patterns are searched for:  
 `*.new-*` `*.new` `*.NEW` `*.old-*` `*.old` `*.OLD` `*.bak` `*-` `*.pacnew` `*.pacorig` `*.pacsave` `*.pacsave.[0-9]*`  
-Files are opened in editor for comparison with original/new version(s) using sudoedit. Please be aware that this script requires sudo to run; whilst it works for me, and I have had no issues with it, I highly recommend you read the code fully before using a script from a random person on the internet and giving it root privileges. Default editor used for file comparison and the path(s) searched for configuration files are set in `/etc/confchange.conf` .  
+Files are opened in editor for comparison with original/new version(s) using gvfs (Meld), polkit (kate/kompare) or sudoedit for privilege escalation. Please be aware that this script requires elevated privileges to run; whilst it works for me, and I have had no issues with it, I highly recommend you read the code fully before using a script from a random person on the internet and giving it access to your files. Default editor used for file comparison and the path(s) searched for configuration files are set in `/etc/confchange.conf` .  
 ### Usage: 
 ```
 confchange [ -e <editor> ] [ -p <path> ] [ -d | -h | -v ]  
