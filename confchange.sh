@@ -1,9 +1,9 @@
 #! /bin/sh
 # Script to find new configuration files and open to compare with originals; designed for use in Void and Arch GNU/Linux distributions.
-# v:1.5 2021-12-18
+# v:1.6 2021-12-19
 
 scriptname='confchange'
-scriptver='1.5'
+scriptver='1.6'
 
 usage() {
 	cat <<EOF
@@ -50,14 +50,7 @@ fi
 
 sudo_test() {
 if [ ! -x /usr/bin/sudo ] ; then
-    printf "%s %s\n" "confchange requires sudo to be installed when using this editor"
-    exit 1
-fi
-}
-
-gvfs_test() {
-if [ ! -x /usr/lib/gvfs ] ; then
-    printf "%s %s\n" "confchange requires gvfs to be installed when using this editor"
+    printf "%s %s\n" "confchange requires sudo to be installed for this function"
     exit 1
 fi
 }
@@ -72,10 +65,17 @@ esac
 
 for f in $confdiff; do
     case "$editor" in
-        meld) gvfs_test; "$editor" "admin://${f%\.*}" "admin://$f" &
+        diff|colordiff) "$editor" -sy "${f%\.*}" "$f" | less &
         wait ;;
         kompare|kate) "$editor" "${f%\.*}" "$f" &
         wait ;;
+        meld)   if [ -x /usr/lib/gvfs ] ; then
+                    "$editor" "admin://${f%\.*}" "admin://$f" &
+                    wait
+                else
+                    sudo_test; SUDO_EDITOR="$editor" sudo -e ${f%\.*} $f &
+                    wait
+                fi ;;
         *) sudo_test; SUDO_EDITOR="$editor" sudo -e ${f%\.*} $f &
         wait ;;
     esac
@@ -84,7 +84,7 @@ for f in $confdiff; do
             printf "Delete \""$f"\"? (Y/n): "
             read -r YyNn
             case $YyNn in
-            [Yy]* ) rm "$f" && \
+            [Yy]* ) sudo_test; sudo rm "$f" && \
             printf "%s %s\n" "Deleted \""$f"\""
             break ;;
             [Nn]* ) break ;;
@@ -92,7 +92,7 @@ for f in $confdiff; do
             esac
         done
     else
-        printf "%s %s\n" "Cannot open file(s) in editor!"
+        printf "%s %s\n" "Cannot open file(s) in "$editor"!"
         exit 1
     fi
 done
