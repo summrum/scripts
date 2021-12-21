@@ -1,9 +1,9 @@
 #! /bin/sh
 # Script to find new configuration files and open to compare with originals; designed for use in Void and Arch GNU/Linux distributions.
-# v:1.6 2021-12-19
+# v:1.7 2021-12-21
 
 scriptname='confchange'
-scriptver='1.6'
+scriptver='1.7'
 
 usage() {
 	cat <<EOF
@@ -15,8 +15,8 @@ Configuration of default editor used for file comparison and/or path(s) to searc
 Usage: $scriptname [ -e <editor> ] [ -p <path> ] [ -d | -h | -v ]
 
 Variables:
-  -e/--editor       temporarily change editor from default
-  -p/--path         temporarily change path(s) from default (/boot /etc /usr /var excluding /var/log)
+  -e/--editor       temporarily change editor from default ($editor)
+  -p/--path         temporarily change path(s) from default ($path excluding /var/log)
 
 General Options:
   -d/--defaults     permanently change defaults (/etc/confchange.conf file edited with $EDITOR)
@@ -64,18 +64,14 @@ case "$confdiff" in
 esac
 
 for f in $confdiff; do
+# sudoedit not used for *diff and kde applications supporting polkit; column display for *diff; -d option added to *vim
     case "$editor" in
         diff|colordiff) "$editor" -sy "${f%\.*}" "$f" | less &
         wait ;;
-        kompare|kate) "$editor" "${f%\.*}" "$f" &
+        kate|kompare) "$editor" "${f%\.*}" "$f" &
         wait ;;
-        meld)   if [ -x /usr/lib/gvfs ] ; then
-                    "$editor" "admin://${f%\.*}" "admin://$f" &
-                    wait
-                else
-                    sudo_test; SUDO_EDITOR="$editor" sudo -e ${f%\.*} $f &
-                    wait
-                fi ;;
+        nvim|vim) sudo_test; SUDO_EDITOR="$editor -d" sudo -e ${f%\.*} $f &
+        wait ;;
         *) sudo_test; SUDO_EDITOR="$editor" sudo -e ${f%\.*} $f &
         wait ;;
     esac
