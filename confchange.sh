@@ -1,9 +1,9 @@
 #! /bin/sh
 # Script to find new configuration files and open to compare with originals; designed for use in Void and Arch GNU/Linux distributions.
-# v:1.7 2021-12-21
+# v:1.8 2021-12-29
 
 scriptname='confchange'
-scriptver='1.7'
+scriptver='1.8'
 
 usage() {
 	cat <<EOF
@@ -30,10 +30,18 @@ version() {
 	printf "%s %s\n" "$scriptname" "$scriptver"
 }
 
+sudo_test() {
+if [ ! -x /usr/bin/sudo ] ; then
+    printf "%s %s\n" "confchange requires sudo to be installed for this function"
+    exit 1
+fi
+}
+
 if test -f /etc/confchange.conf; then
     [ -r /etc/confchange.conf ] && . /etc/confchange.conf
 else
-    touch /etc/confchange.conf  > /dev/null 2>&1 && cat >> /etc/confchange.conf << EOF
+	sudo_test
+    sudo touch /etc/confchange.conf  > /dev/null 2>&1 && sudo tee -a /etc/confchange.conf > /dev/null << EOF
 ################################################################################################################
 # This is the configuration file for confchange. Delete this file (/etc/confchange.conf) to reset any changes. #
 # See confchange --help for further details                                                                    #
@@ -47,13 +55,6 @@ path="/boot /etc /usr /var"
 EOF
     [ -r /etc/confchange.conf ] && . /etc/confchange.conf
 fi
-
-sudo_test() {
-if [ ! -x /usr/bin/sudo ] ; then
-    printf "%s %s\n" "confchange requires sudo to be installed for this function"
-    exit 1
-fi
-}
 
 main() {
 # Find configuration files matching patterns given; change to add/remove naming patterns
