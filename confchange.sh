@@ -112,11 +112,11 @@ done
 
 while getopts ":e:p:dhv" opt; do
     case $opt in
-        e) editor=$OPTARG; main ;;
-        p) path=$OPTARG; main ;;
+        e) editor=$OPTARG;;
+        p) path=$OPTARG;;
         d) sudo_test; SUDO_EDITOR="$EDITOR" sudo -e /etc/confchange.conf &
         wait
-        [ -r /etc/confchange.conf ] && . /etc/confchange.conf; main ;;
+        [ -r /etc/confchange.conf ] && . /etc/confchange.conf;;
         h) usage; exit 0 ;;
         v) version; exit 0 ;;
         *) usage; exit 1 ;;
