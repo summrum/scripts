@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Script to look at the age of the root installation
-# v:1.4 2021-11-05
+# v:1.5 2021-12-29
 
 if (( BASH_VERSINFO[0] < 4 )); then
     printf "%s %s\n" "Bash 4 or higher currently required."
@@ -8,7 +8,7 @@ if (( BASH_VERSINFO[0] < 4 )); then
 fi
 
 scriptname='birthday'
-scriptver='1.4'
+scriptver='1.5'
 
 usage() {
 	cat <<EOF
@@ -100,11 +100,11 @@ fi
 }
 
 if
+cat /etc/*-release > /dev/null; then
+OSNAME=$(cat /etc/*-release | grep -E "^ID=" | sed 's/Linux//g; s/linux//g; s/"//g; s/ID//g; s/=//g' | sed 's/.*/\u&/')
+elif
 lsb_release -i > /dev/null; then
 OSNAME=$(lsb_release -i | sed 's/Linux//g; s/linux//g; s/Distributor//g; s/ID://g' | sed 's/.*/\u&/' | xargs)
-elif
-cat /etc/*-release > /dev/null; then
-OSNAME=$(cat /etc/*-release | grep DISTRIB_ID | sed 's/Linux//g; s/linux//g; s/"//g; s/DISTRIB_ID//g; s/=//g' | sed 's/.*/\u&/')
 else
 OSNAME="Unknown"
 fi
