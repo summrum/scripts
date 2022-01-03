@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Script to look at the age of the root installation
-# v:1.5 2021-12-29
+# v:2.0 2022-01-03
 
 if (( BASH_VERSINFO[0] < 4 )); then
     printf "%s %s\n" "Bash 4 or higher currently required."
@@ -8,14 +8,14 @@ if (( BASH_VERSINFO[0] < 4 )); then
 fi
 
 scriptname='birthday'
-scriptver='1.5'
+scriptver='2.0'
 
 usage() {
 	cat <<EOF
 $scriptname v:$scriptver
 
 A simple script to look at the age of the root installation.
-Date style currently set as $STYLE ($STYLE_F).
+Date style currently set as $style ($style_f).
 
 Usage: $scriptname [ -s <style> | -h | -v ]
 
@@ -33,47 +33,103 @@ version() {
 	printf "%s %s\n" "$scriptname" "$scriptver"
 }
 
-BIRTH=$(LANG=C stat / | awk '/Birth: /{print $2}')
-case "$BIRTH" in
-    *2* ) DATE=$(date "+%Y-%m-%d"); BIRTH_S=$(date -d "$BIRTH" "+%s"); DATE_S=$(date "+%s") ;;
+birth=$(LANG=C stat / | awk '/Birth: /{print $2}' | xargs)
+
+case "$birth" in
+    *2* ) birth_s=$(date -d "$birth" "+%s"); date_s=$(date "+%s");;
     * ) printf "%s %s\n" "Birth not recorded for root partition"; exit 1 ;;
 esac
 
-AGE_S=$((DATE_S-BIRTH_S))
-AGE_D=$((AGE_S / 86400))
-AGE_M=$((AGE_S / 2629800))
-AGE_Y=$((AGE_S / 31557600))
+IFS=- read date_1 date_2 date_3 <<< "$(date "+%Y-%m-%d")"
+date_m=$((10#"$date_2"))
+date_d=$((10#"$date_3"))
+IFS=- read birth_1 birth_2 birth_3 <<< "$birth"
+birth_m=$((10#"$birth_2"))
+birth_d=$((10#"$birth_3"))
+day_sec=86400; month_sec=2629800; year_sec=31557600
+age_s=$((date_s - birth_s)); age_d=$((age_s / day_sec)); age_m=$((age_s / month_sec)); age_y=$((age_s / year_sec))
 
-IFS=- read BIRTH_1 BIRTH_2 BIRTH_3 <<< "$BIRTH"
-BIRTH_Y=$((10#"$BIRTH_1"))
-BIRTH_M=$((10#"$BIRTH_2"))
-BIRTH_D=$((10#"$BIRTH_3"))
-
-IFS=- read DATE_1 DATE_2 DATE_3 <<< "$DATE"
-DATE_M=$((10#"$DATE_2"))
-DATE_D=$((10#"$DATE_3"))
-
-getage () { #FIXME
-    if ((AGE_Y >= 1)); then
-        if ((DATE_M == BIRTH_M)) && ((DATE_D == BIRTH_D)); then
-        printf "%s %s\n" "exactly $AGE_Y years old today - Happy Birthday!"
+getage () {
+    if ((age_s >= year_sec)); then
+        if ((age_y == 1)); then
+            y_nom=year
         else
-        printf "%s %s\n" "$AGE_Y years old."
+            y_nom=years
         fi
-    elif ((AGE_M >= 1)); then
-    printf "%s %s\n" "$AGE_M months old."
+        if ((date_m == birth_m)) && ((date_d == birth_d)); then
+            printf "%s %s\n" "exactly $age_y $y_nom old today - Happy Birthday!"
+        else
+        remainder_m=$((age_s - (age_y * year_sec)))
+        remainder_d=$((age_s - (age_m * month_sec)))
+            if ((remainder_m >= month_sec)); then
+                months=$((remainder_m / month_sec))
+                if ((months == 1)); then
+                    m_nom=month
+                else
+                    m_nom=months
+                fi
+                remainder_d=$((remainder_m - (months * month_sec)))
+                if ((remainder_d >= day_sec)); then
+                    days=$((remainder_d / day_sec))
+                    if ((days == 1)); then
+                        d_nom=day
+                    else
+                        d_nom=days
+                    fi
+                    printf "%s %s\n" "$age_y $y_nom, $months $m_nom and $days $d_nom old."
+                else
+                    printf "%s %s\n" "$age_y $y_nom and $months $m_nom old."
+                fi
+            elif ((remainder_d >= day_sec)); then
+                days=$((remainder_d / day_sec))
+                if ((days == 1)); then
+                    d_nom=day
+                else
+                    d_nom=days
+                fi
+                printf "%s %s\n" "$age_y $y_nom and $days $d_nom old."
+            else
+                printf "%s %s\n" "$age_y $y_nom old."
+            fi
+        fi
+    elif ((age_s >= month_sec)); then
+        remainder_d=$((age_s - (age_m * month_sec)))
+        if ((age_m == 1)); then
+            m_nom=month
+        else
+            m_nom=months
+        fi
+        if ((remainder_d >= day_sec)); then
+            days=$((remainder_d / day_sec))
+            if ((days == 1)); then
+                d_nom=day
+            else
+                d_nom=days
+            fi
+            printf "%s %s\n" "$age_m $m_nom and $days $d_nom old."
+        else
+            printf "%s %s\n" "$age_m $m_nom old."
+        fi
     else
-    printf "%s %s\n" "$AGE_D days old."
+    if ((age_d == 1)); then
+        d_nom=day
+    else
+        d_nom=days
+    fi
+    printf "%s %s\n" "$age_d $d_nom old."
     fi
 }
 
 confmake() {
 if test -f $HOME/.rumprefs/birthday; then
+    if [ ! -z "$(grep "STYLE=" $HOME/.rumprefs/birthday)" ]; then
+    sed -i s/"STYLE="/"style="/g $HOME/.rumprefs/birthday
+    fi
     [ -r $HOME/.rumprefs/birthday ] && . $HOME/.rumprefs/birthday
 else
     mkdir -p $HOME/.rumprefs
     cat >> $HOME/.rumprefs/birthday << EOF
-STYLE=DMY
+style=DMY
 EOF
     [ -r $HOME/.rumprefs/birthday ] && . $HOME/.rumprefs/birthday
 fi
@@ -81,51 +137,51 @@ fi
 
 prefs() {
 confmake
-if [ $STYLE = "DMY" ]; then
-STYLE_F="day/month/year"
-elif [ $STYLE = "MDY" ]; then
-STYLE_F="month/day/year"
-elif [ $STYLE = "YDM" ]; then
-STYLE_F="year/day/month"
-elif [ $STYLE = "DYM" ]; then
-STYLE_F="day/year/month"
-elif [ $STYLE = "YMD" ]; then
-STYLE_F="year/month/day"
-elif [ $STYLE = "MYD" ]; then
-STYLE_F="month/year/day"
+if [ "$style" = "DMY" ]; then
+style_f="day/month/year"
+elif [ "$style" = "MDY" ]; then
+style_f="month/day/year"
+elif [ "$style" = "YDM" ]; then
+style_f="year/day/month"
+elif [ "$style" = "DYM" ]; then
+style_f="day/year/month"
+elif [ "$style" = "YMD" ]; then
+style_f="year/month/day"
+elif [ "$style" = "MYD" ]; then
+style_f="month/year/day"
 else
-STYLE_F="defaulting to day/month/year"
-STYLE="unrecognised format"
+style_f="defaulting to day/month/year"
+style="unrecognised format"
 fi
 }
 
 if
 cat /etc/*-release > /dev/null; then
-OSNAME=$(cat /etc/*-release | grep -E "^ID=" | sed 's/Linux//g; s/linux//g; s/"//g; s/ID//g; s/=//g' | sed 's/.*/\u&/')
+osname=$(cat /etc/*-release | grep -E "^ID=" | sed 's/Linux//g; s/linux//g; s/"//g; s/ID//g; s/=//g' | sed 's/.*/\u&/')
 elif
 lsb_release -i > /dev/null; then
-OSNAME=$(lsb_release -i | sed 's/Linux//g; s/linux//g; s/Distributor//g; s/ID://g' | sed 's/.*/\u&/' | xargs)
+osname=$(lsb_release -i | sed 's/Linux//g; s/linux//g; s/Distributor//g; s/ID://g' | sed 's/.*/\u&/' | xargs)
 else
-OSNAME="Unknown"
+osname="Unknown"
 fi
 
 cmd () {
-if [ $STYLE = "DMY" ]; then
-INST="$BIRTH_3/$BIRTH_2/$BIRTH_1"
-elif [ $STYLE = "MDY" ]; then
-INST="$BIRTH_2/$BIRTH_3/$BIRTH_1"
-elif [ $STYLE = "YDM" ]; then
-INST="$BIRTH_1/$BIRTH_3/$BIRTH_2"
-elif [ $STYLE = "DYM" ]; then
-INST="$BIRTH_3/$BIRTH_1/$BIRTH_2"
-elif [ $STYLE = "YMD" ]; then
-INST="$BIRTH_1/$BIRTH_2/$BIRTH_3"
-elif [ $STYLE = "MYD" ]; then
-INST="$BIRTH_2/$BIRTH_1/$BIRTH_3"
+if [ "$style" = "DMY" ]; then
+inst="$birth_3/$birth_2/$birth_1"
+elif [ "$style" = "MDY" ]; then
+inst="$birth_2/$birth_3/$birth_1"
+elif [ "$style" = "YDM" ]; then
+inst="$birth_1/$birth_3/$birth_2"
+elif [ "$style" = "DYM" ]; then
+inst="$birth_3/$birth_1/$birth_2"
+elif [ "$style" = "YMD" ]; then
+inst="$birth_1/$birth_2/$birth_3"
+elif [ "$style" = "MYD" ]; then
+inst="$birth_2/$birth_1/$birth_3"
 else
-INST="$BIRTH_3/$BIRTH_2/$BIRTH_1"
+inst="$birth_3/$birth_2/$birth_1"
 fi
-printf "%s %s\n" "$OSNAME installation created on $INST; the operating system is $(getage)"
+printf "%s %s\n" "$osname installation created on $inst; the operating system is $(getage)"
 }
 
 if [ -z "$1" ]; then
@@ -135,7 +191,7 @@ if [ -z "$1" ]; then
     	case "$1" in
     		-s|--style)
                 confmake
-                sed -i s/"STYLE=.*"/"STYLE=$2"/g $HOME/.rumprefs/birthday
+                sed -i s/"style=.*"/"style=$2"/g $HOME/.rumprefs/birthday
                 prefs; cmd; exit 0;;
     		-h|--help)
     			prefs; usage; exit 0;;
