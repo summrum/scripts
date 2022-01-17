@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Script to look at the age of the root installation
-# v:2.0 2022-01-03
+# v:2.0 2022-01-17
 
 if (( BASH_VERSINFO[0] < 4 )); then
     printf "%s %s\n" "Bash 4 or higher currently required."
@@ -40,14 +40,17 @@ case "$birth" in
     * ) printf "%s %s\n" "Birth not recorded for root partition"; exit 1 ;;
 esac
 
+unset current_IFS
+[ -n "${IFS+current}" ] && current_IFS=$IFS
 IFS=- read date_1 date_2 date_3 <<< "$(date "+%Y-%m-%d")"
+IFS=- read birth_1 birth_2 birth_3 <<< "$birth"
 date_m=$((10#"$date_2"))
 date_d=$((10#"$date_3"))
-IFS=- read birth_1 birth_2 birth_3 <<< "$birth"
 birth_m=$((10#"$birth_2"))
 birth_d=$((10#"$birth_3"))
 day_sec=86400; month_sec=2629800; year_sec=31557600
 age_s=$((date_s - birth_s)); age_d=$((age_s / day_sec)); age_m=$((age_s / month_sec)); age_y=$((age_s / year_sec))
+IFS=$current_IFS
 
 getage () {
     if ((age_s >= year_sec)); then
