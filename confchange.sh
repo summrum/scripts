@@ -1,6 +1,6 @@
 #! /bin/sh
 # Script to find new configuration files and open to compare with originals; designed for use in Void and Arch GNU/Linux distributions.
-# v:1.8 2021-12-29
+# v:1.8 2022-02-10
 
 scriptname='confchange'
 scriptver='1.8'
@@ -65,11 +65,9 @@ case "$confdiff" in
 esac
 
 for f in $confdiff; do
-# sudoedit not used for *diff and kde applications supporting polkit; column display for *diff; -d option added to *vim
+# sudoedit not used for *diff; column display for *diff; -d option added to *vim
     case "$editor" in
         diff|colordiff) "$editor" -sy "${f%\.*}" "$f" | less &
-        wait ;;
-        kate|kompare) "$editor" "${f%\.*}" "$f" &
         wait ;;
         nvim|vim) sudo_test; SUDO_EDITOR="$editor -d" sudo -e ${f%\.*} $f &
         wait ;;
