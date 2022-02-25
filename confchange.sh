@@ -1,9 +1,9 @@
 #! /bin/sh
 # Script to find new configuration files and open to compare with originals; designed for use in Void and Arch GNU/Linux distributions.
-# v:1.8 2022-02-10
+# v:1.9 2022-02-25
 
 scriptname='confchange'
-scriptver='1.8'
+scriptver='1.9'
 
 usage() {
 	cat <<EOF
@@ -58,20 +58,21 @@ fi
 
 main() {
 # Find configuration files matching patterns given; change to add/remove naming patterns
-confdiff=$(find $path -not \( -path /var/log -prune \) \( -name \*.new-\* -o -name \*.new -o -name \*.NEW -o -name \*.old-\* -o -name \*.old -o -name \*.OLD -o -name \*.bak -o -name \*- -o -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave -o -name '*.pacsave.[0-9]*' \) 2>/dev/null)
+confdiff=$(find $path -not \( -path /var/log -prune \) \( -name \*.new-\* -o -name \*.new -o -name \*.NEW -o -name \*.old-\* -o -name \*.old -o -name \*.OLD -o -name \*.bak -o -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave -o -name '*.pacsave.[0-9]*' \) 2>/dev/null)
 
 case "$confdiff" in
     "" ) printf "%s %s\n" "No new configurations found in searched directories"; exit 0 ;;
 esac
 
 for f in $confdiff; do
-# sudoedit not used for *diff; column display for *diff; -d option added to *vim
+	orig=$(echo "$f" | cut -f 1,2 -d '.')
+# sudoedit not used for *diff ; column display for *diff; -d option added to *vim
     case "$editor" in
-        diff|colordiff) "$editor" -sy "${f%\.*}" "$f" | less &
+        diff|colordiff) "$editor" -sy "$orig" "$f" | less &
         wait ;;
-        nvim|vim) sudo_test; SUDO_EDITOR="$editor -d" sudo -e ${f%\.*} $f &
+        nvim|vim) sudo_test; SUDO_EDITOR="$editor -d" sudo -e $orig $f &
         wait ;;
-        *) sudo_test; SUDO_EDITOR="$editor" sudo -e ${f%\.*} $f &
+        *) sudo_test; SUDO_EDITOR="$editor" sudo -e $orig $f &
         wait ;;
     esac
     if [ "$?" = "0" ] ; then
