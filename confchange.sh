@@ -65,7 +65,7 @@ case "$confdiff" in
 esac
 
 for f in $confdiff; do
-	orig=$(echo "$f" | cut -f 1,2 -d '.')
+	orig="${f%.*}"
 # sudoedit not used for *diff ; column display for *diff; -d option added to *vim
     case "$editor" in
         diff|colordiff) "$editor" -sy "$orig" "$f" | less &
