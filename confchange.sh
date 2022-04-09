@@ -1,9 +1,9 @@
 #! /bin/sh
 # Script to find new configuration files and open to compare with originals; designed for use in Void and Arch GNU/Linux distributions.
-# v:1.9 2022-02-25
+# v:2.0 2022-04-09
 
 scriptname='confchange'
-scriptver='1.9'
+scriptver='2.0'
 
 usage() {
 	cat <<EOF
@@ -58,7 +58,7 @@ fi
 
 main() {
 # Find configuration files matching patterns given; change to add/remove naming patterns
-confdiff=$(find $path -not \( -path /var/log -prune \) \( -name \*.new-\* -o -name \*.new -o -name \*.NEW -o -name \*.old-\* -o -name \*.old -o -name \*.OLD -o -name \*.bak -o -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave -o -name '*.pacsave.[0-9]*' \) 2>/dev/null)
+confdiff=$(find $path -not \( -path /var/log -prune \) \( -name \*.new-\* -o -name \*.new -o -name \*.NEW -o -name \*.old-\* -o -name \*.old -o -name \*.OLD -o -name \*.bak -o -name \*.pacnew -o -name \*.pacorig -o -name \*.pacsave\* \) 2>/dev/null)
 
 case "$confdiff" in
     "" ) printf "%s %s\n" "No new configurations found in searched directories"; exit 0 ;;
@@ -66,6 +66,14 @@ esac
 
 for f in $confdiff; do
 	orig="${f%.*}"
+# Handle files appended with number containing 1-3 decimals ##FIXME more elegant solution required
+	if echo $orig | egrep -q '*-[0-9].[0-9].[0-9]*'; then
+		orig="${f%.*.*.*.*}"
+	elif echo $orig | egrep -q '*-[0-9].[0-9]*'; then
+		orig="${f%.*.*.*}"
+	elif echo $orig | egrep -q '*-[0-9].*'; then
+		orig="${f%.*.*}"
+	fi	
 # sudoedit not used for *diff ; column display for *diff; -d option added to *vim
     case "$editor" in
         diff|colordiff) "$editor" -sy "$orig" "$f" | less &
@@ -75,7 +83,7 @@ for f in $confdiff; do
         *) sudo_test; SUDO_EDITOR="$editor" sudo -e $orig $f &
         wait ;;
     esac
-    if [ "$?" = "0" ] ; then
+    if [ "$?" = "0" ]; then
         while true; do
             printf "Delete \""$f"\"? (Y/n): "
             read -r YyNn
