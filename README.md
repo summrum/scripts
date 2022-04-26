@@ -10,14 +10,14 @@ Files are opened in editor for comparison with original/new version(s) using sud
 confchange [ -e <editor> ] [ -p <path> ] [ -d | -h | -v ]  
 ```
 ### Options: 
- - `-e/--editor <editor>` Temporarily change editor from default (set as Meld https://github.com/GNOME/meld as that works for me) to `<editor>`. Incorrect program name selection will default to environment variable `$EDITOR`  
+ - `-e/--editor <editor>` Temporarily change editor from default (set as [Meld](https://github.com/GNOME/meld) as that works for me) to `<editor>`. Incorrect program name selection will default to environment variable `$EDITOR`  
  - `-p/--path <path>` Temporarily change path(s) from default (`/boot /etc /usr /var`) to `<path>`. `/var/log` is excluded   
  - `-d/--defaults` Permanently change defaults (/etc/confchange.conf file edited with environment variable `$EDITOR`)
  - `-h/--help` Display usage information  
  - `-v/--version` Display version
   
 ## 2. picrename:  
-A Bash script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset. Video recoding requires handbrake-cli (https://handbrake.fr/). Designed to unify names of pictures and videos taken across various devices.  
+A Bash script to rename files in given path matching given pattern to date+time and recode any video files of chosen format(s) to selected preset. Video recoding requires [handbrake-cli](https://handbrake.fr/). Designed to unify names of pictures and videos taken across various devices.  
 ### Usage:  
 ```
 picrename [ -f <filepattern> ] [ -p <path> ]  [ -P <preset> ] [ -V <video> ] [ -C <container> ]  [ -h | -v ]  
@@ -33,7 +33,7 @@ picrename [ -f <filepattern> ] [ -p <path> ]  [ -P <preset> ] [ -V <video> ] [ -
  - `-v/--version` Display version  
 
 ## 3. vstoggle:  
-A Bash script to enable and disable V-Sync on intel GPU for current user; works by creating ~/.drirc file (if not already present) and setting vblank_mode=0 (see https://wiki.archlinux.org/title/Intel_graphics#Disable_Vertical_Synchronization_(VSYNC)). Turning vsync on sets vblank_mode=3. Not tested with multi-monitor setups and will exit if simple check for second screen in .drirc found. Also not really designed for those with a complex .drirc file - backup your ~/.drirc before usage. Improvements to come after further testing...    
+A Bash script to enable and disable V-Sync on intel GPU for current user; works by creating ~/.drirc file (if not already present) and [setting vblank_mode=0](https://wiki.archlinux.org/title/Intel_graphics#Disable_Vertical_Synchronization_(VSYNC)). Turning vsync on sets vblank_mode=3. Not tested with multi-monitor setups and will exit if simple check for second screen in .drirc found. Also not really designed for those with a complex .drirc file - backup your ~/.drirc before usage. Improvements to come after further testing...    
 ### Usage: 
 ```
 vstoggle [ -s | -y | -n | -h | -v ]  
